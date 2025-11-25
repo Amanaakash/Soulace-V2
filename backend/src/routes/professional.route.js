@@ -1,5 +1,5 @@
 import express from 'express';
-import { deleteProfessional, getUnverifiedProfessionals, getVerifiedProfessionals, login, logout, signup, updateProfessional } from '../controllers/professional.controller.js';
+import {login, logout, signup, updateProfessional } from '../controllers/professional.controller.js';
 import isAdmin from '../middleware/isAdmin.middleware.js';
 import { uploadProfessionalDocuments } from '../config/multer.js';
 import limiter from '../middleware/rateLimiter.middleware.js';
@@ -30,15 +30,15 @@ router.post('/prof-verify-otp', profVerifyOTP);
 
 // Admin routes for managing professionals
 //Get unverified professionals
-router.get('/unverified', isAdmin, getUnverifiedProfessionals);
+// router.get('/unverified', isAdmin, getUnverifiedProfessionals);
 
 //Get verified professionals
-router.get('/verified', isAdmin, getVerifiedProfessionals);
+// router.get('/verified', isAdmin, getVerifiedProfessionals);
 
 //Update professional by admin
 router.put('/admin/update/:id', isAdmin, updateProfessional);
 
 //Delete professional
-router.delete('/delete/:id', isAdmin, deleteProfessional);
+// router.delete('/delete/:id', isAdmin, deleteProfessional);
 
 export default router;
