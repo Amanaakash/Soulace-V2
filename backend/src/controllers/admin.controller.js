@@ -22,18 +22,19 @@ export const adminLogin = async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate JWT token with id, role, and email
+    // Generate JWT token with id, role, and email (7 days expiration)
     const token = jwt.sign(
       { id: admin._id, role: admin.role, email: admin.email },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     );
 
-    // Send token to client
-    res.cookie('token', token, {
+    // Send token to client - Safari compatible
+    res.cookie('soulace_admin_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
 
     // Send success response with token, username, and email
@@ -55,10 +56,10 @@ export const adminLogin = async (req, res) => {
 export const adminLogout = (req, res) => {
   try {
     // Clear the cookie
-    res.clearCookie('token', {
+    res.clearCookie('soulace_admin_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     });
 
     res.status(200).json({ message: 'Logged out successfully' });
@@ -118,3 +119,164 @@ export const insertAdmin = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+// Get all admins
+export const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await Admin.find().select('-password'); // Exclude password from response
+    
+    res.status(200).json({
+      success: true,
+      count: admins.length,
+      admins,
+    });
+  } catch (error) {
+    console.error('Error in getAllAdmins controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Delete admin
+export const deleteAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Prevent admin from deleting themselves
+    if (req.admin._id.toString() === id) {
+      return res.status(400).json({ message: 'You cannot delete your own admin account' });
+    }
+
+    const deletedAdmin = await Admin.findByIdAndDelete(id);
+
+    if (!deletedAdmin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Admin deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error in deleteAdmin controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Get all professionals
+export const getAllProfessionals = async (req, res) => {
+  try {
+    const Professional = (await import('../models/professional.model.js')).default;
+    const professionals = await Professional.find().select('-password');
+    
+    res.status(200).json({
+      success: true,
+      count: professionals.length,
+      professionals,
+    });
+  } catch (error) {
+    console.error('Error in getAllProfessionals controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Delete professional
+export const deleteProfessional = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const Professional = (await import('../models/professional.model.js')).default;
+
+    const deletedProfessional = await Professional.findByIdAndDelete(id);
+
+    if (!deletedProfessional) {
+      return res.status(404).json({ message: 'Professional not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Professional deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error in deleteProfessional controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Update professional (for admin approval and other updates)
+export const updateProfessional = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const Professional = (await import('../models/professional.model.js')).default;
+
+    // Don't allow password updates through this route
+    if (updateData.password) {
+      delete updateData.password;
+    }
+
+    const updatedProfessional = await Professional.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedProfessional) {
+      return res.status(404).json({ message: 'Professional not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Professional updated successfully',
+      professional: updatedProfessional,
+    });
+  } catch (error) {
+    console.error('Error in updateProfessional controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Get all users
+export const getAllUsers = async (req, res) => {
+  try {
+    const User = (await import('../models/User.model.js')).default;
+    const users = await User.find().select('-password');
+    
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    console.error('Error in getAllUsers controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Delete user
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const User = (await import('../models/User.model.js')).default;
+
+    const deletedUser = await User.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error in deleteUser controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const getAllReports = async (req, res) => {};
+
+export const getAllContacts = async (req, res) => {};
+
+export const getAllInquiries = async (req, res) => {};
+
+export const getAllFeedbacks = async (req, res) => {};
