@@ -14,13 +14,13 @@ const professionalSchema = new mongoose.Schema(
     yearsOfExperience: { type: Number, required: true },
     
     // Licensing & Verification
-    licenseNumber: { type: String, required: true },
-    licenseIssuingAuthority: { type: String, required: true },
-    registrationNumber: { type: String, required: true },
-    licenseDocument: { type: String, required: true },
-    primaryCertificate: { type: String, required: true },
-    additionalCertificates: [{ type: String, default: null }], // Support multiple certificates
-    governmentIDDocument: { type: String, required: true },
+    licenseNumber: { type: String, default: null },
+    licenseIssuingAuthority: { type: String, default: null },
+    registrationNumber: { type: String, default: null },
+    licenseDocument: { type: String, default: null },
+    primaryCertificate: { type: String, default: null },
+    additionalCertificates: [{ type: String }], // Support multiple certificates
+    governmentIDDocument: { type: String, default: null },
     selfieImage: { type: String, default: null },
 
     // Work Information
@@ -33,10 +33,10 @@ const professionalSchema = new mongoose.Schema(
     country: { type: String, required: true },
 
     // Banking & Payment
-    nameOfBank: { type: String, required: true },
-    accountHoldersName: { type: String, required: true },
-    accountNumber: { type: String, required: true }, // Consider encrypting this
-    upiId: { type: String, required: true },
+    nameOfBank: { type: String, default: null },
+    accountHoldersName: { type: String, default: null },
+    accountNumber: { type: String, default: null }, // Consider encrypting this
+    upiId: { type: String, default: null },
 
     // Authentication & Security
     email: { type: String, required: true, unique: true },
