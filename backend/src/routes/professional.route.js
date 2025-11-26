@@ -36,7 +36,7 @@ router.post('/prof-verify-otp', profVerifyOTP);
 // router.get('/verified', isAdmin, getVerifiedProfessionals);
 
 //Update professional by admin
-router.put('/admin/update/:id', isAdmin, updateProfessional);
+// router.put('/admin/update/:id', isAdmin, updateProfessional);
 
 //Delete professional
 // router.delete('/delete/:id', isAdmin, deleteProfessional);

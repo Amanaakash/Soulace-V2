@@ -1,4 +1,6 @@
 import Admin from '../models/admin.model.js';
+import Professional from '../models/professional.model.js';
+import User from '../models/User.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -165,7 +167,6 @@ export const deleteAdmin = async (req, res) => {
 // Get all professionals
 export const getAllProfessionals = async (req, res) => {
   try {
-    const Professional = (await import('../models/professional.model.js')).default;
     const professionals = await Professional.find().select('-password');
     
     res.status(200).json({
@@ -183,7 +184,6 @@ export const getAllProfessionals = async (req, res) => {
 export const deleteProfessional = async (req, res) => {
   try {
     const { id } = req.params;
-    const Professional = (await import('../models/professional.model.js')).default;
 
     const deletedProfessional = await Professional.findByIdAndDelete(id);
 
@@ -206,7 +206,6 @@ export const updateProfessional = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-    const Professional = (await import('../models/professional.model.js')).default;
 
     // Don't allow password updates through this route
     if (updateData.password) {
@@ -237,7 +236,6 @@ export const updateProfessional = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const User = (await import('../models/User.model.js')).default;
     const users = await User.find().select('-password');
     
     res.status(200).json({
@@ -255,7 +253,6 @@ export const getAllUsers = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const User = (await import('../models/User.model.js')).default;
 
     const deletedUser = await User.findByIdAndDelete(id);
 
