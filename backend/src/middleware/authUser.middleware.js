@@ -4,7 +4,7 @@ import User from '../models/User.model.js'; // Ensure correct model import
 const checkRegisteredUser = async (req, res, next) => {
     try {
         // Check if token exists in cookies
-        const token = req.cookies?.soulace_token;
+        const token = req.cookies?.soulace_user_token;
         if (!token) {
             return res.status(401).json({ success: false, message: "Unauthorized: No token provided" });
         }

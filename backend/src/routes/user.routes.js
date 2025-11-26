@@ -4,7 +4,6 @@ import limiter from '../middleware/rateLimiter.middleware.js';
 import checkRegisteredUser from '../middleware/authUser.middleware.js';
 import { sendVerificationEmail, verifyEmail } from '../controllers/emailVerification.controller.js';
 import { sendOTP, verifyOTP } from '../controllers/phoneVerification.controller.js';
-import aiRoute from './src/routes/aiChat.route.js';
 
 const router = express.Router();
 
@@ -28,6 +27,6 @@ router.post('/send-verification-otp',sendOTP);
 router.post('/verify-otp',verifyOTP);
 
 //AI chatbot routes
-app.use('/aiChat',aiRoute);
+// app.use('/aiChat',aiRoute);
 
 export default router;

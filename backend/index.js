@@ -11,6 +11,7 @@ import {app, server} from './src/config/socket.js';
 import matchRoute from './src/routes/match.routes.js';
 import chatRequestRoute from './src/routes/chatRequest.route.js';
 import checkRegisteredUser from './src/middleware/authUser.middleware.js';
+import aiRoute from './src/routes/aiChat.route.js';
 
 
 app.use(cors());
@@ -27,7 +28,6 @@ app.use('/api/users',userRoute);
 //Routes for professionals
 app.use('/api/professional',professionalRoute);
 
-
 //Admin Routes
 app.use('/api/admin',adminRoute);
 
@@ -36,7 +36,7 @@ app.use("/api/messages", messageRoutes);
 app.use('/api/online-users',matchRoute);
 app.use('/api/chat-requests',checkRegisteredUser,chatRequestRoute);
 
-
+app.use('/api/ai-chat',aiRoute);
 
 // Start the server
 const PORT = process.env.PORT || 5000;
