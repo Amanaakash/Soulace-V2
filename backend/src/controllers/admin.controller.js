@@ -1,6 +1,9 @@
 import Admin from '../models/admin.model.js';
 import Professional from '../models/professional.model.js';
 import User from '../models/User.model.js';
+import Report from '../models/reports.model.js';
+import Contact from '../models/contacts.model.js';
+import Feedback from '../models/feedbacks.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -270,10 +273,71 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-export const getAllReports = async (req, res) => {};
+// Get all reports
+export const getAllReports = async (req, res) => {
+  try {
+    const reports = await Report.find()
+      .populate('reviewedBy', 'username email')
+      .sort({ createdAt: -1 }); // Sort by newest first
+    
+    res.status(200).json({
+      success: true,
+      count: reports.length,
+      reports,
+    });
+  } catch (error) {
+    console.error('Error in getAllReports controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
-export const getAllContacts = async (req, res) => {};
+// Get all contacts
+export const getAllContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find()
+      .populate('respondedBy', 'username email')
+      .sort({ createdAt: -1 }); // Sort by newest first
+    
+    res.status(200).json({
+      success: true,
+      count: contacts.length,
+      contacts,
+    });
+  } catch (error) {
+    console.error('Error in getAllContacts controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
-export const getAllInquiries = async (req, res) => {};
+// Get all feedbacks
+export const getAllFeedbacks = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find()
+      .populate('professionalId', 'firstName lastName email')
+      .populate('reviewedBy', 'username email')
+      .sort({ createdAt: -1 }); // Sort by newest first
+    
+    res.status(200).json({
+      success: true,
+      count: feedbacks.length,
+      feedbacks,
+    });
+  } catch (error) {
+    console.error('Error in getAllFeedbacks controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
-export const getAllFeedbacks = async (req, res) => {};
+export const getAllInquiries = async (req, res) => {
+  // Placeholder for inquiries - can be implemented later if needed
+  try {
+    res.status(200).json({
+      success: true,
+      message: 'Inquiries endpoint - to be implemented',
+      inquiries: [],
+    });
+  } catch (error) {
+    console.error('Error in getAllInquiries controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
