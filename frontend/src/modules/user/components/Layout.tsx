@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, 
   User, 
@@ -14,6 +14,7 @@ import {
   LogOut,
   X
 } from 'lucide-react';
+import { useUserAuthStore } from '../store/userAuthStore';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -22,9 +23,16 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useUserAuthStore();
+  
+  const getFullName = () => {
+    if (!user) return '';
+    return `${user.firstName} ${user.lastName}`;
+  };
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Grid3X3 },
+    { name: 'Dashboard', href: '/user/dashboard', icon: Grid3X3 },
     { name: 'Mood Assessment', href: '/mood-assessment', icon: TrendingUp },
     { name: 'Peer Support', href: '/peer-support', icon: MessageCircle },
     { name: 'Professional Help', href: '/professional-help', icon: Stethoscope },
@@ -35,6 +43,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/user/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50">
@@ -92,8 +109,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <User className="w-5 h-5 text-white" />
               </div>
               <div className="hidden lg:block flex-1">
-                <p className="text-sm font-medium text-gray-900">Anonymous User</p>
-                <p className="text-xs text-gray-500">Safe & Secure</p>
+                <p className="text-sm font-medium text-gray-900">{getFullName() || 'Anonymous User'}</p>
+                <p className="text-xs text-gray-500">{user?.role || 'Guest'}</p>
               </div>
             </div>
             <div className="hidden lg:flex mt-3 space-x-2">
@@ -101,9 +118,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Settings className="w-4 h-4 mr-1" />
                 Settings
               </Link>
-              <Link to="/" className="flex items-center justify-center px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 transition-colors">
+              <button 
+                onClick={handleLogout}
+                className="flex items-center justify-center px-3 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
+              >
                 <LogOut className="w-4 h-4" />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -148,3 +168,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 };
 
 export default Layout;
+

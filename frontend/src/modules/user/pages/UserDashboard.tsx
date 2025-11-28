@@ -17,7 +17,7 @@ import {
   Activity
 } from 'lucide-react';
 
-const Dashboard: React.FC = () => {
+const UserDashboard: React.FC = () => {
   const [currentMentor, setCurrentMentor] = useState(0);
 
   const mentors = [
@@ -303,4 +303,5 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default UserDashboard;
+

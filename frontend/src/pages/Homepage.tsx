@@ -5,11 +5,9 @@ import {
   MessageCircle, 
   Stethoscope, 
   Shield, 
-  Users, 
   TrendingUp,
   ArrowRight,
-  Star,
-  Play
+  Star
 } from 'lucide-react';
 
 const Homepage: React.FC = () => {
@@ -75,7 +73,7 @@ const Homepage: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/dashboard" className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
+              <Link to="/user/login" className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-full font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
                 Start Healing
               </Link>
             </div>
@@ -100,15 +98,18 @@ const Homepage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
-                to="/dashboard"
+                to="/user/login"
                 className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg font-medium rounded-full hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
                 Start Healing Anonymously
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <button className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-medium rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-200">
-                <Play className="mr-2 w-5 h-5" />
-                Watch How It Works
+                <Link 
+                to="/professional/login"
+                >
+                Start as a Professional
+                </Link>
               </button>
             </div>
           </div>
@@ -204,7 +205,7 @@ const Homepage: React.FC = () => {
             Join thousands who have found support, healing, and hope through SoulAce
           </p>
           <Link 
-            to="/dashboard"
+            to="/user/login"
             className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 text-lg font-medium rounded-full hover:bg-gray-50 transition-all duration-200 transform hover:scale-105 shadow-lg"
           >
             Start Your Journey Today
