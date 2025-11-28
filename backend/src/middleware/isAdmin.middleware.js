@@ -5,7 +5,7 @@ import Admin from '../models/admin.model.js';
 dotenv.config();
 
 const isAdmin = async (req, res, next) => {
-  const token = req.cookies.token;
+  const token = req.cookies.soulace_admin_token;
 
   if (!token) {
     return res.status(401).json({ message: 'Access denied by Middleware. No token provided.' });
