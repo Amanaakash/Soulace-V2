@@ -11,7 +11,10 @@ export interface Professional {
   phoneNumber: string;
   gender: 'Male' | 'Female' | 'Other';
   dateOfBirth: string;
-  specialization?: string;
+  designation?: string;
+  specialization?: string | string[];
+  yearsOfExperience?: number;
+  country?: string;
   licenseNumber?: string;
   verified: boolean;
   createdAt: string;
@@ -32,7 +35,10 @@ interface ProfessionalSignupData {
   confirmPassword: string;
   gender: 'Male' | 'Female' | 'Other';
   dateOfBirth: string;
-  specialization?: string;
+  designation: string;
+  specialization: string;
+  yearsOfExperience: string;
+  country: string;
   licenseNumber?: string;
 }
 

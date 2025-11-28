@@ -15,7 +15,10 @@ const ProfessionalSignup: React.FC = () => {
     confirmPassword: '',
     gender: 'Male' as 'Male' | 'Female' | 'Other',
     dateOfBirth: '',
+    designation: '',
     specialization: '',
+    yearsOfExperience: '',
+    country: '',
     licenseNumber: '',
   });
 
@@ -171,10 +174,60 @@ const ProfessionalSignup: React.FC = () => {
                 id="specialization"
                 name="specialization"
                 type="text"
+                required
                 className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                 value={formData.specialization}
                 onChange={handleChange}
                 placeholder="e.g., Clinical Psychology"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="designation" className="block text-sm font-medium text-gray-700 mb-1">
+                Designation
+              </label>
+              <input
+                id="designation"
+                name="designation"
+                type="text"
+                required
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                value={formData.designation}
+                onChange={handleChange}
+                placeholder="e.g., Psychologist, Psychiatrist"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="yearsOfExperience" className="block text-sm font-medium text-gray-700 mb-1">
+                Years of Experience
+              </label>
+              <input
+                id="yearsOfExperience"
+                name="yearsOfExperience"
+                type="number"
+                min="0"
+                required
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                value={formData.yearsOfExperience}
+                onChange={handleChange}
+                placeholder="e.g., 5"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
+                Country
+              </label>
+              <input
+                id="country"
+                name="country"
+                type="text"
+                required
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+                value={formData.country}
+                onChange={handleChange}
+                placeholder="e.g., India"
               />
             </div>
             
