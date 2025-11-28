@@ -14,10 +14,15 @@ import checkRegisteredUser from './src/middleware/authUser.middleware.js';
 import aiRoute from './src/routes/aiChat.route.js';
 
 
-app.use(cors());
+dotenv.config();
+
+// CORS configuration to allow credentials
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookieParser());
-dotenv.config();
 connectDB();
 
 
