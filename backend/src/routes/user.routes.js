@@ -4,6 +4,7 @@ import limiter from '../middleware/rateLimiter.middleware.js';
 import checkRegisteredUser from '../middleware/authUser.middleware.js';
 import { sendVerificationEmail, verifyEmail } from '../controllers/emailVerification.controller.js';
 import { sendOTP, verifyOTP } from '../controllers/phoneVerification.controller.js';
+import { connectWithListener } from '../controllers/professional_support.controller.js';
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.post('/set-offline', checkRegisteredUser, setOffline);
 
 router.put('/update-mood-preferences', checkRegisteredUser, updateMoodPreferences);
 
-
+router.post('/connect-listener', checkRegisteredUser, connectWithListener);
 
 
 
