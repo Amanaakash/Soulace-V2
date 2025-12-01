@@ -1,0 +1,2 @@
+from user dashboard,multiple options, user goto peer chat option and page opens, then setOnline api hits and sets user as online in db, once exit the tab or page, user will be set to offline. 
+

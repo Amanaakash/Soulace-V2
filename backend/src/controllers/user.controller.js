@@ -149,3 +149,63 @@ export const checkAuth = (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+
+export const setOnline = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    await User.findByIdAndUpdate(userId, { isOnline: true });
+
+    res.status(200).json({ message: 'User set to online' });
+  } catch (error) {
+    console.error('Error in setOnline controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const setOffline = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    await User.findByIdAndUpdate(userId, { isOnline: false });
+
+    res.status(200).json({ message: 'User set to offline' });
+  } catch (error) {
+    console.error('Error in setOffline controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// Update user mood preferences
+export const updateMoodPreferences = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { myMood, preferedMood } = req.body;
+
+    // Validate myMood
+    if (!myMood || !Array.isArray(myMood) || myMood.length === 0) {
+      return res.status(400).json({ message: 'myMood is required and must be a non-empty array.' });
+    }
+
+    // Validate preferedMood
+    if (!preferedMood || !['similar', 'different'].includes(preferedMood)) {
+      return res.status(400).json({ message: 'preferedMood must be either "similar" or "different".' });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { myMood, preferedMood },
+      { new: true }
+    ).select('-password');
+
+    res.status(200).json({
+      success: true,
+      message: 'Mood preferences updated successfully',
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error('Error in updateMoodPreferences controller:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};

@@ -14,8 +14,12 @@ const userSchema = new mongoose.Schema(
     phoneVerified: { type: Boolean, default: false },
     role: { type: String, default:"User"},
     isOnline: { type: Boolean, default: false }, // Online status
-    currentMood: { type: String, default: "Neutral" }, // User's current mood
-    preferedMood: { type: String, default: "Neutral" }, // User's prefered mood
+    myMood: [{ type: String }], // User's current moods (multiple)
+    preferedMood: { 
+      type: String, 
+      enum: ['similar', 'different'], 
+      default: null 
+    }, // User's preference: similar or different mood
     otp: { type: String, default: null },  // OTP for phone number verification
     otpExpiration: { type: Date, default: null }, // Expiration time for OTP
     otpVerificationId: { type: String },  // Store the temporary OTP verification ID

@@ -21,7 +21,6 @@ dotenv.config();
 connectDB();
 
 
-
 // Routes for users
 app.use('/api/users',userRoute);
 
