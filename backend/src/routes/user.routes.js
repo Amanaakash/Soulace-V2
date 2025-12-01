@@ -24,7 +24,7 @@ router.post('/set-offline', checkRegisteredUser, setOffline);
 
 router.put('/update-mood-preferences', checkRegisteredUser, updateMoodPreferences);
 
-router.post('/connect-listener', checkRegisteredUser, connectWithListener);
+router.post('/professional-support/connect-listener', checkRegisteredUser, connectWithListener);
 
 
 
