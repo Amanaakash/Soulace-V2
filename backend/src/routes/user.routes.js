@@ -25,6 +25,10 @@ router.put('/update-mood-preferences', checkRegisteredUser, updateMoodPreference
 
 
 
+
+
+
+//curently not using these
 router.post('/send-verification-email', sendVerificationEmail);
 router.get('/verify-email', verifyEmail);
 router.post('/send-verification-otp',sendOTP);

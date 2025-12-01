@@ -3,6 +3,7 @@ import connectDB from './src/config/db.js';
 import dotenv from 'dotenv';
 import userRoute from './src/routes/user.routes.js';
 import professionalRoute from './src/routes/professional.route.js';
+import listenerRoute from './src/routes/listener.routes.js';
 import cors from 'cors';// Middleware for handling CORS errors
 import adminRoute from './src/routes/admin.route.js';
 import cookieParser from 'cookie-parser';
@@ -26,6 +27,9 @@ app.use('/api/users',userRoute);
 
 //Routes for professionals
 app.use('/api/professional',professionalRoute);
+
+//Routes for listeners
+app.use('/api/listener',listenerRoute);
 
 //Admin Routes
 app.use('/api/admin',adminRoute);

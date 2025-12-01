@@ -13,6 +13,7 @@
   "author": "Your Name",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^10.1.0",
     "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.41.3",

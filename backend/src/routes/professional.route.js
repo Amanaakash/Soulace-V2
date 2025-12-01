@@ -19,26 +19,16 @@ router.post('/logout', logout);
 // Update professional profile with documents and additional info
 router.put('/update-profile/:id', isProfessional, uploadProfessionalDocuments, updateProfessional);
 
+
+
+
+//curently not using these
 // Email verification routes
 router.post('/prof-send-email', profSendVerificationEmail);
-
 router.get('/prof-verify-email', profVerifyEmail);
-
 // Phone verification routes
 router.post('/prof-send-otp', profSendOTP);
 router.post('/prof-verify-otp', profVerifyOTP);
 
-// Admin routes for managing professionals
-//Get unverified professionals
-// router.get('/unverified', isAdmin, getUnverifiedProfessionals);
-
-//Get verified professionals
-// router.get('/verified', isAdmin, getVerifiedProfessionals);
-
-//Update professional by admin
-// router.put('/admin/update/:id', isAdmin, updateProfessional);
-
-//Delete professional
-// router.delete('/delete/:id', isAdmin, deleteProfessional);
 
 export default router;

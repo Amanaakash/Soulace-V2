@@ -3,24 +3,24 @@ import User from '../models/User.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { faker } from '@faker-js/faker';
 
 dotenv.config(); // Load environment variables from .env file
 
-// Helper function to generate a unique username
+// Helper function to generate a unique username using faker
 const generateUniqueUsername = async () => {
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
   let username;
   let isUnique = false;
 
   while (!isUnique) {
-    // Generate a random username with 8-12 characters
-    const length = Math.floor(Math.random() * 5) + 8; // Random length between 8-12
-    username = '';
+    // Generate a first name using faker
+    const firstName = faker.person.firstName();
     
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      username += characters[randomIndex];
-    }
+    // Generate a random 3-digit number (100-999)
+    const randomNumber = Math.floor(Math.random() * 900) + 100;
+    
+    // Combine first name with random 3-digit number
+    username = `${firstName.toLowerCase()}${randomNumber}`;
 
     // Check if username already exists in the database
     const existingUser = await User.findOne({ username });
@@ -30,6 +30,21 @@ const generateUniqueUsername = async () => {
   }
 
   return username;
+};
+
+// Helper function to calculate age from date of birth
+const calculateAge = (dateOfBirth) => {
+  const today = new Date();
+  const birthDate = new Date(dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  // Adjust age if birthday hasn't occurred yet this year
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
 };
 
 // Signup (User Registration)
@@ -53,6 +68,9 @@ export const signup = async (req, res) => {
     // Generate a unique username
     const username = await generateUniqueUsername();
 
+    // Calculate age from date of birth
+    const age = calculateAge(dateOfBirth);
+
     // Hash the password using the hashPassword function from hash.js
     const hashedPassword = await hashPassword(password);
 
@@ -63,6 +81,7 @@ export const signup = async (req, res) => {
       username,
       gender,
       dateOfBirth,
+      age,
       email,
       phoneNumber,
       password: hashedPassword,
