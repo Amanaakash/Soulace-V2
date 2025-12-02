@@ -5,6 +5,7 @@ import checkRegisteredUser from '../middleware/authUser.middleware.js';
 import { sendVerificationEmail, verifyEmail } from '../controllers/emailVerification.controller.js';
 import { sendOTP, verifyOTP } from '../controllers/phoneVerification.controller.js';
 import { connectWithListener } from '../controllers/professional_support.controller.js';
+import { getAllProfessionalsWithAvailability, getPublicAvailableSlots } from '../controllers/calendar.controller.js';
 
 const router = express.Router();
 
@@ -26,7 +27,15 @@ router.put('/update-mood-preferences', checkRegisteredUser, updateMoodPreference
 
 router.post('/professional-support/connect-listener', checkRegisteredUser, connectWithListener);
 
+// PUBLIC ENDPOINTS (No authentication required)
 
+// Get public available slots for a specific professional
+// GET /api/calendar/public/slots?email=prof@example.com&month=2025-01
+router.get('/public/slots', checkRegisteredUser,getPublicAvailableSlots);
+
+// Get all professionals with their next available slot
+// GET /api/calendar/public/professionals
+router.get('/public/professionals', checkRegisteredUser, getAllProfessionalsWithAvailability);
 
 
 //curently not using these

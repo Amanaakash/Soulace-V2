@@ -29,14 +29,6 @@ router.patch('/patch-events/:eventId', isProfessional, updateAvailabilityEvent);
 // GET /api/calendar/schedule?email=prof@example.com
 router.get('/schedule', isProfessional, getProfessionalSchedule);
 
-// PUBLIC ENDPOINTS (No authentication required)
 
-// Get public available slots for a specific professional
-// GET /api/calendar/public/slots?email=prof@example.com&month=2025-01
-router.get('/public/slots', getPublicAvailableSlots);
-
-// Get all professionals with their next available slot
-// GET /api/calendar/public/professionals
-router.get('/public/professionals', getAllProfessionalsWithAvailability);
 
 export default router;

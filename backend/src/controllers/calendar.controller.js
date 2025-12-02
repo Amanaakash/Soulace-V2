@@ -197,6 +197,29 @@ export const createAvailabilityEvent = async (req, res) => {
     if (!professional.accessToken || !professional.refreshToken) {
       return res.status(400).json({
         success: false,
+        message: "Google Calendar not connected. Please connect your Google account first."
+      });
+    }
+
+    // Get calendar instance
+    const calendar = await getCalendarInstance(professional);
+
+    // Create event object
+    const event = {
+      summary: summary,
+      description: description,
+      location: location,
+      start: {
+        dateTime: start.toISOString(),
+        timeZone: "UTC",
+      },
+      end: {
+        dateTime: end.toISOString(),
+        timeZone: "UTC",
+      },
+      colorId: "2", // Light green for availability
+    };
+
     // Insert event into Google Calendar
     const response = await calendar.events.insert({
       calendarId: "primary",
@@ -229,29 +252,6 @@ export const createAvailabilityEvent = async (req, res) => {
         location: response.data.location,
         htmlLink: response.data.htmlLink,
         slotId: availabilitySlot._id,
-      },
-    }); timeZone: "UTC",
-      },
-      colorId: "2", // Light green for availability
-    };
-
-    // Insert event into Google Calendar
-    const response = await calendar.events.insert({
-      calendarId: "primary",
-      requestBody: event,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Availability event created successfully",
-      event: {
-        id: response.data.id,
-        summary: response.data.summary,
-        description: response.data.description,
-        start: response.data.start.dateTime,
-        end: response.data.end.dateTime,
-        location: response.data.location,
-        htmlLink: response.data.htmlLink,
       },
     });
 
@@ -351,6 +351,23 @@ export const updateAvailabilityEvent = async (req, res) => {
         });
       }
       updateData.end = {
+        dateTime: end.toISOString(),
+        timeZone: "UTC",
+      };
+    }
+
+    // Validate start is before end if both provided
+    if (updateData.start && updateData.end) {
+      const startTime = new Date(updateData.start.dateTime);
+      const endTime = new Date(updateData.end.dateTime);
+      if (startTime >= endTime) {
+        return res.status(400).json({
+          success: false,
+          message: "Start time must be before end time"
+        });
+      }
+    }
+
     // Update event in Google Calendar
     const response = await calendar.events.patch({
       calendarId: "primary",
@@ -371,21 +388,6 @@ export const updateAvailabilityEvent = async (req, res) => {
       { $set: dbUpdateData },
       { new: true }
     );
-
-    res.status(200).json({
-      success: true,
-      message: "Availability event updated successfully",
-      event: {
-        id: response.data.id,
-        summary: response.data.summary,
-        description: response.data.description,
-        start: response.data.start.dateTime || response.data.start.date,
-        end: response.data.end.dateTime || response.data.end.date,
-        location: response.data.location,
-        htmlLink: response.data.htmlLink,
-      },
-    });equestBody: updateData,
-    });
 
     res.status(200).json({
       success: true,
