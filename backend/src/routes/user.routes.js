@@ -1,5 +1,17 @@
 import express from 'express';
-import { checkAuth, login, logout, signup, setOnline, setOffline, updateMoodPreferences } from '../controllers/user.controller.js'; // Import the signup controller
+import { 
+  checkAuth, 
+  login, 
+  logout, 
+  signup, 
+  setOnline, 
+  setOffline, 
+  updateMoodPreferences,
+  createBooking,
+  getMyBookings,
+  getBookingById,
+  cancelBooking
+} from '../controllers/user.controller.js'; // Import the signup controller
 import limiter from '../middleware/rateLimiter.middleware.js';
 import checkRegisteredUser from '../middleware/authUser.middleware.js';
 import { sendVerificationEmail, verifyEmail } from '../controllers/emailVerification.controller.js';
@@ -36,6 +48,26 @@ router.get('/public/slots', checkRegisteredUser,getPublicAvailableSlots);
 // Get all professionals with their next available slot
 // GET /api/calendar/public/professionals
 router.get('/public/professionals', checkRegisteredUser, getAllProfessionalsWithAvailability);
+
+// BOOKING ROUTES
+
+// Create a new booking
+// POST /api/user/bookings
+// Body: { slotId, bookingNotes }
+router.post('/new-bookings', checkRegisteredUser, createBooking);
+
+// Get all bookings for the logged-in user
+// GET /api/user/bookings?status=pending&upcoming=true
+router.get('/all-bookings', checkRegisteredUser, getMyBookings);
+
+// Get a specific booking by ID
+// GET /api/user/bookings/:bookingId
+router.get('/get-booking/:bookingId', checkRegisteredUser, getBookingById);
+
+// Cancel a booking
+// PATCH /api/user/bookings/:bookingId/cancel
+// Body: { cancellationReason }
+router.patch('/cancel-booking/:bookingId/cancel', checkRegisteredUser, cancelBooking);
 
 
 //curently not using these

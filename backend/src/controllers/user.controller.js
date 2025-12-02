@@ -1,5 +1,8 @@
 import { hashPassword } from '../utils/hash.js';  // Import hashPassword function
 import User from '../models/User.model.js';
+import Booking from '../models/Booking.model.js';
+import AvailabilitySlot from '../models/AvailabilitySlot.model.js';
+import Professional from '../models/professional.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -226,5 +229,313 @@ export const updateMoodPreferences = async (req, res) => {
   } catch (error) {
     console.error('Error in updateMoodPreferences controller:', error);
     res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+// BOOKING FUNCTIONS
+
+// Create a new booking
+export const createBooking = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { slotId, bookingNotes } = req.body;
+
+    // Validate required fields
+    if (!slotId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Slot ID is required'
+      });
+    }
+
+    // Find the availability slot
+    const slot = await AvailabilitySlot.findById(slotId);
+    if (!slot) {
+      return res.status(404).json({
+        success: false,
+        message: 'Availability slot not found'
+      });
+    }
+
+    // Check if slot is available
+    if (slot.status !== 'available') {
+      return res.status(400).json({
+        success: false,
+        message: 'This slot is no longer available'
+      });
+    }
+
+    // Check if slot is in the future
+    if (new Date(slot.startDateTime) <= new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot book a slot in the past'
+      });
+    }
+
+    // Check if user already has a booking for this slot
+    const existingBooking = await Booking.findOne({
+      userId,
+      slotId,
+      status: { $in: ['pending', 'confirmed'] }
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already booked this slot'
+      });
+    }
+
+    // Get user details
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get professional details
+    const professional = await Professional.findById(slot.professionalId);
+    if (!professional) {
+      return res.status(404).json({
+        success: false,
+        message: 'Professional not found'
+      });
+    }
+
+    // Create booking
+    const booking = await Booking.create({
+      userId,
+      professionalId: slot.professionalId,
+      slotId: slot._id,
+      professionalEmail: slot.professionalEmail,
+      userEmail: user.email,
+      userName: user.username,
+      startDateTime: slot.startDateTime,
+      endDateTime: slot.endDateTime,
+      location: slot.location,
+      bookingNotes: bookingNotes || '',
+      googleCalendarLink: slot.googleCalendarLink,
+      status: 'pending',
+    });
+
+    // Update slot status to booked
+    slot.status = 'booked';
+    slot.bookedBy = userId;
+    await slot.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Booking created successfully',
+      booking: {
+        id: booking._id,
+        professionalName: `${professional.firstName} ${professional.lastName}`,
+        professionalEmail: professional.email,
+        startDateTime: booking.startDateTime,
+        endDateTime: booking.endDateTime,
+        location: booking.location,
+        status: booking.status,
+        googleCalendarLink: booking.googleCalendarLink,
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create booking',
+      error: error.message
+    });
+  }
+};
+
+// Get all bookings for the logged-in user
+export const getMyBookings = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { status, upcoming } = req.query;
+
+    // Build query
+    const query = { userId };
+
+    // Filter by status if provided
+    if (status) {
+      query.status = status;
+    }
+
+    // Filter upcoming bookings (future dates only)
+    if (upcoming === 'true') {
+      query.startDateTime = { $gte: new Date() };
+    }
+
+    // Fetch bookings with professional details
+    const bookings = await Booking.find(query)
+      .populate('professionalId', 'firstName lastName email profilePicture designation specialization')
+      .sort({ startDateTime: 1 });
+
+    res.status(200).json({
+      success: true,
+      message: 'Bookings fetched successfully',
+      count: bookings.length,
+      bookings: bookings.map(booking => ({
+        id: booking._id,
+        professional: {
+          id: booking.professionalId._id,
+          name: `${booking.professionalId.firstName} ${booking.professionalId.lastName}`,
+          email: booking.professionalId.email,
+          profilePicture: booking.professionalId.profilePicture,
+          designation: booking.professionalId.designation,
+          specialization: booking.professionalId.specialization,
+        },
+        startDateTime: booking.startDateTime,
+        endDateTime: booking.endDateTime,
+        location: booking.location,
+        status: booking.status,
+        bookingNotes: booking.bookingNotes,
+        googleCalendarLink: booking.googleCalendarLink,
+        createdAt: booking.createdAt,
+      }))
+    });
+
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch bookings',
+      error: error.message
+    });
+  }
+};
+
+// Get a specific booking by ID
+export const getBookingById = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { bookingId } = req.params;
+
+    // Find booking
+    const booking = await Booking.findOne({ _id: bookingId, userId })
+      .populate('professionalId', 'firstName lastName email profilePicture designation specialization phoneNumber');
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Booking details fetched successfully',
+      booking: {
+        id: booking._id,
+        professional: {
+          id: booking.professionalId._id,
+          name: `${booking.professionalId.firstName} ${booking.professionalId.lastName}`,
+          email: booking.professionalId.email,
+          profilePicture: booking.professionalId.profilePicture,
+          designation: booking.professionalId.designation,
+          specialization: booking.professionalId.specialization,
+          phoneNumber: booking.professionalId.phoneNumber,
+        },
+        startDateTime: booking.startDateTime,
+        endDateTime: booking.endDateTime,
+        location: booking.location,
+        status: booking.status,
+        bookingNotes: booking.bookingNotes,
+        googleCalendarLink: booking.googleCalendarLink,
+        cancellationReason: booking.cancellationReason,
+        cancelledBy: booking.cancelledBy,
+        cancelledAt: booking.cancelledAt,
+        createdAt: booking.createdAt,
+        updatedAt: booking.updatedAt,
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch booking details',
+      error: error.message
+    });
+  }
+};
+
+// Cancel a booking
+export const cancelBooking = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { bookingId } = req.params;
+    const { cancellationReason } = req.body;
+
+    // Find booking
+    const booking = await Booking.findOne({ _id: bookingId, userId });
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: 'Booking not found'
+      });
+    }
+
+    // Check if booking is already cancelled or completed
+    if (booking.status === 'cancelled') {
+      return res.status(400).json({
+        success: false,
+        message: 'Booking is already cancelled'
+      });
+    }
+
+    if (booking.status === 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot cancel a completed booking'
+      });
+    }
+
+    // Check if booking is in the past
+    if (new Date(booking.startDateTime) <= new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot cancel a booking that has already started or passed'
+      });
+    }
+
+    // Update booking status
+    booking.status = 'cancelled';
+    booking.cancellationReason = cancellationReason || 'Cancelled by user';
+    booking.cancelledBy = 'user';
+    booking.cancelledAt = new Date();
+    await booking.save();
+
+    // Update availability slot status back to available
+    await AvailabilitySlot.findByIdAndUpdate(
+      booking.slotId,
+      {
+        status: 'available',
+        $unset: { bookedBy: 1 }
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Booking cancelled successfully',
+      booking: {
+        id: booking._id,
+        status: booking.status,
+        cancellationReason: booking.cancellationReason,
+        cancelledAt: booking.cancelledAt,
+      }
+    });
+
+  } catch (error) {
+    console.error('Error cancelling booking:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to cancel booking',
+      error: error.message
+    });
   }
 };
