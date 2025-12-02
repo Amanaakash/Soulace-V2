@@ -1,6 +1,5 @@
 import express from 'express';
-import {login, logout, signup, updateProfessional } from '../controllers/professional.controller.js';
-import isAdmin from '../middleware/isAdmin.middleware.js';
+import {login, logout, professionalSchedule, signup, updateProfessional } from '../controllers/professional.controller.js';
 import { uploadProfessionalDocuments } from '../config/multer.js';
 import limiter from '../middleware/rateLimiter.middleware.js';
 import { profSendVerificationEmail, profVerifyEmail } from '../controllers/professionalEmailVerification.controller.js';
@@ -19,7 +18,8 @@ router.post('/logout', logout);
 // Update professional profile with documents and additional info
 router.put('/update-profile/:id', isProfessional, uploadProfessionalDocuments, updateProfessional);
 
-
+//calender
+router.get('/calendar', isProfessional,professionalSchedule );
 
 
 //curently not using these

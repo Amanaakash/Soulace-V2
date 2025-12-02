@@ -13,6 +13,7 @@ import matchRoute from './src/routes/match.routes.js';
 import chatRequestRoute from './src/routes/chatRequest.route.js';
 import checkRegisteredUser from './src/middleware/authUser.middleware.js';
 import aiRoute from './src/routes/aiChat.route.js';
+import authRoutes from "./src/routes/authRoute.js";
 
 
 dotenv.config();
@@ -32,6 +33,9 @@ app.use('/api/users',userRoute);
 
 //Routes for professionals
 app.use('/api/professional',professionalRoute);
+//google auth
+app.use("/api/professional/google-auth", authRoutes);
+
 
 //Routes for listeners
 app.use('/api/listener',listenerRoute);

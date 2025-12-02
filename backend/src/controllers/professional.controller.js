@@ -3,6 +3,9 @@ import Professional from '../models/professional.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { google } from "googleapis";
+
+
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -201,3 +204,6 @@ export const updateProfessional = async (req, res) => {
   }
 };
 
+export const professionalSchedule = async (req, res) => {
+
+};

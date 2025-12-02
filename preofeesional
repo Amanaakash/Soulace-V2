@@ -1,0 +1,15 @@
+professional sanga kura garda, instant chat ta hudaina, booking garnu parxa. will have to use the calender api and meet api for starting the meet.
+
+
+
+Professional → Login → Google OAuth → Store tokens → Mark them as verified
+
+User → chooses professional → frontend calls backend:
+    backend → getBusySlots()
+    backend → generate free slots
+    return to frontend
+
+User → selects a free slot → click Book
+
+Backend → events.insert → add event to professional’s Google Calendar
+Backend → send confirmation to user
