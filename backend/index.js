@@ -14,6 +14,7 @@ import chatRequestRoute from './src/routes/chatRequest.route.js';
 import checkRegisteredUser from './src/middleware/authUser.middleware.js';
 import aiRoute from './src/routes/aiChat.route.js';
 import authRoutes from "./src/routes/authRoute.js";
+import calendarRoutes from "./src/routes/calendar.routes.js";
 
 
 dotenv.config();
@@ -36,6 +37,8 @@ app.use('/api/professional',professionalRoute);
 //google auth
 app.use("/api/professional/google-auth", authRoutes);
 
+//Calendar routes for professionals
+app.use('/api/calendar', calendarRoutes);
 
 //Routes for listeners
 app.use('/api/listener',listenerRoute);
