@@ -205,5 +205,29 @@ export const updateProfessional = async (req, res) => {
 };
 
 export const professionalSchedule = async (req, res) => {
+//from this function, professional will get their own calender having all events
+  try {
+    const professionalId = req.professional?._id;
 
+    if (!professionalId) {
+      return res.status(400).json({ message: "Professional ID is required" });
+    }
+
+    const professional = await Professional.findById(professionalId);
+
+    if (!professional) {
+      return res.status(404).json({ message: "Professional not found" });
+    }
+
+    // Assuming professional.calendarEvents contains the events
+    const calendarEvents = professional.calendarEvents || [];
+
+    return res.status(200).json({
+      success: true,
+      calendarEvents,
+    });
+  } catch (err) {
+    console.error("Error in professionalSchedule Controller:", err);
+    return res.status(500).json({ message: "Internal server error", error: err.message });
+  }
 };

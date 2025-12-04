@@ -18,8 +18,8 @@ router.post('/logout', logout);
 // Update professional profile with documents and additional info
 router.put('/update-profile/:id', isProfessional, uploadProfessionalDocuments, updateProfessional);
 
-//calender
-router.get('/calendar', isProfessional,professionalSchedule );
+//get my schedule form calender
+router.get('/my-calendar', isProfessional,professionalSchedule );
 
 
 //curently not using these

@@ -2,7 +2,7 @@ import User from '../models/User.model.js';
 
 // Matching Algorithm
 export const matchUsers = async (req, res) => {
-  const { myMood, preferedMood, userId } = req.body;
+  const { myMoodQuadrants, preferedMood, userId } = req.body;
 
   // Validate required fields
   if (!myMood || !Array.isArray(myMood) || myMood.length === 0) {
