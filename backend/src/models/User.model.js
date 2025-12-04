@@ -15,7 +15,16 @@ const userSchema = new mongoose.Schema(
     phoneVerified: { type: Boolean, default: false },
     role: { type: String, default:"User"},
     isOnline: { type: Boolean, default: false }, // Online status
-    myMood: [{ type: String }], // User's current moods (multiple)
+    myMoodQuadrants: [{ 
+      type: String,
+      enum: ['00', '01', '10', '11'],
+      validate: {
+        validator: function(v) {
+          return ['00', '01', '10', '11'].includes(v);
+        },
+        message: props => `${props.value} is not a valid mood quadrant! Use: 00, 01, 10, or 11`
+      }
+    }], // User's current mood quadrants
     preferedMood: { 
       type: String, 
       enum: ['similar', 'different'], 
