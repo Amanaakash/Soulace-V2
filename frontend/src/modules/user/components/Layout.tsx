@@ -12,7 +12,8 @@ import {
   AlertTriangle,
   Settings,
   LogOut,
-  X
+  X,
+  Bot
 } from 'lucide-react';
 import { useUserAuthStore } from '../store/userAuthStore';
 
@@ -34,6 +35,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigation = [
     { name: 'Dashboard', href: '/user/dashboard', icon: Grid3X3 },
     { name: 'Mood Assessment', href: '/mood-assessment', icon: TrendingUp },
+    { name: 'AI Chat', href: '/ai-chat', icon: Bot },
     { name: 'Peer Support', href: '/peer-support', icon: MessageCircle },
     { name: 'Professional Help', href: '/professional-help', icon: Stethoscope },
     { name: 'Mood Tracker', href: '/mood-tracker', icon: Heart },
