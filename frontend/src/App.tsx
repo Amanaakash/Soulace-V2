@@ -17,6 +17,7 @@ import Mindfulness from './modules/user/pages/Mindfulness';
 import Community from './modules/user/pages/Community';
 import Emergency from './modules/user/pages/Emergency';
 import Profile from './modules/user/pages/Profile';
+import AIChat from './modules/user/pages/AIChat';
 
 // Professional Module
 import ProfessionalLogin from './modules/professional/pages/ProfessionalLogin';
@@ -148,6 +149,14 @@ function App() {
             element={
               <UserProtectedRoute>
                 <UserLayout><Profile /></UserLayout>
+              </UserProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/ai-chat" 
+            element={
+              <UserProtectedRoute>
+                <UserLayout><AIChat /></UserLayout>
               </UserProtectedRoute>
             } 
           />
