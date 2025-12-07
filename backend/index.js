@@ -53,6 +53,16 @@ app.use('/api/chat-requests',checkRegisteredUser,chatRequestRoute);
 
 app.use('/api/ai-chat',aiRoute);
 
+
+
+app.get('/', (req, res) => {
+res.json({
+  message: "Soulace BackendAPI is running...",
+  serverTime: new Date().toLocaleString()
+});
+
+
+});
 // Start the server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
