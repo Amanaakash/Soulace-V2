@@ -26,5 +26,10 @@ export const API_ENDPOINTS = {
     DASHBOARD: '/admin/dashboard',
     INSERT: '/admin/insert',
   },
+  
+  // AI Chat endpoints
+  AI_CHAT: {
+    GEMINI: '/ai-chat/gemini',
+  },
 };
 
