@@ -63,6 +63,15 @@ const professionalSchema = new mongoose.Schema(
     // Role & Verification
     role: { type: String, default: "Professional" },
     isApprovedByAdmin: { type: Boolean, default: false }, // Clarifies admin verification status
+
+    //now for google auth
+    name: String,
+  // email: { type: String, unique: true },
+  googleId: String,
+
+  accessToken: String,
+  refreshToken: String,
+  tokenExpiry: Number,
   },
   { timestamps: true }
 );

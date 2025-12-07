@@ -1,0 +1,12 @@
+when user is in the ai chat. then uses any of the forbidden words, we will have a dictionary of words that are forbidden in frontend it self (hard coded). if the state management system detects it, then ai chat interface is blocked by a pop-up ui covering full screen, no any cross buttons. showing that you are in crisis. 
+
+
+if user say: die, suicide... => user_crisis state
+
+if user say: fuck, sex... => forbidden_words state
+
+will make few more states for different category of words and will make and show the pop-up ui accordingly
+
+ui will show crisis or warning to user => seek professional support .....
+
+if user clicks 'i am fine' 'it was a typo error' then continue to the ai chat, but the before chat will be deleted. => fresh start.

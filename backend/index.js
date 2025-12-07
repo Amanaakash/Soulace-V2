@@ -3,6 +3,7 @@ import connectDB from './src/config/db.js';
 import dotenv from 'dotenv';
 import userRoute from './src/routes/user.routes.js';
 import professionalRoute from './src/routes/professional.route.js';
+import listenerRoute from './src/routes/listener.routes.js';
 import cors from 'cors';// Middleware for handling CORS errors
 import adminRoute from './src/routes/admin.route.js';
 import cookieParser from 'cookie-parser';
@@ -12,6 +13,8 @@ import matchRoute from './src/routes/match.routes.js';
 import chatRequestRoute from './src/routes/chatRequest.route.js';
 import checkRegisteredUser from './src/middleware/authUser.middleware.js';
 import aiRoute from './src/routes/aiChat.route.js';
+import authRoutes from "./src/routes/authRoute.js";
+import calendarRoutes from "./src/routes/calendar.routes.js";
 
 
 dotenv.config();
@@ -26,12 +29,19 @@ app.use(cookieParser());
 connectDB();
 
 
-
 // Routes for users
 app.use('/api/users',userRoute);
 
 //Routes for professionals
 app.use('/api/professional',professionalRoute);
+//google auth
+app.use("/api/professional/google-auth", authRoutes);
+
+//Calendar routes for professionals
+app.use('/api/calendar', calendarRoutes);
+
+//Routes for listeners
+app.use('/api/listener',listenerRoute);
 
 //Admin Routes
 app.use('/api/admin',adminRoute);

@@ -3,6 +3,9 @@ import Professional from '../models/professional.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { google } from "googleapis";
+
+
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -201,66 +204,30 @@ export const updateProfessional = async (req, res) => {
   }
 };
 
-// Get all unverified professionals (Admin)
-// export const getUnverifiedProfessionals = async (req, res) => {
-//   try {
-//     const unverifiedProfessionals = await Professional.find({ 
-//       isApprovedByAdmin: false 
-//     }).select('-password');
+export const professionalSchedule = async (req, res) => {
+//from this function, professional will get their own calender having all events
+  try {
+    const professionalId = req.professional?._id;
 
-//     res.status(200).json({
-//       success: true,
-//       count: unverifiedProfessionals.length,
-//       professionals: unverifiedProfessionals,
-//     });
-//   } catch (error) {
-//     console.error("Error in getUnverifiedProfessionals:", error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// };
+    if (!professionalId) {
+      return res.status(400).json({ message: "Professional ID is required" });
+    }
 
-// Get all verified professionals (Admin)
-// export const getVerifiedProfessionals = async (req, res) => {
-//   try {
-//     const verifiedProfessionals = await Professional.find({ 
-//       isApprovedByAdmin: true 
-//     }).select('-password');
+    const professional = await Professional.findById(professionalId);
 
-//     res.status(200).json({
-//       success: true,
-//       count: verifiedProfessionals.length,
-//       professionals: verifiedProfessionals,
-//     });
-//   } catch (error) {
-//     console.error("Error in getVerifiedProfessionals:", error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// };
+    if (!professional) {
+      return res.status(404).json({ message: "Professional not found" });
+    }
 
-// Delete professional (Admin)
-// export const deleteProfessional = async (req, res) => {
-//   try {
-//     const { id } = req.params;
+    // Assuming professional.calendarEvents contains the events
+    const calendarEvents = professional.calendarEvents || [];
 
-//     const deletedProfessional = await Professional.findByIdAndDelete(id);
-
-//     if (!deletedProfessional) {
-//       return res.status(404).json({ message: 'Professional not found' });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: 'Professional deleted successfully',
-//     });
-//   } catch (error) {
-//     console.error("Error in deleteProfessional:", error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// };
-
-
-
-
-
-
-
+    return res.status(200).json({
+      success: true,
+      calendarEvents,
+    });
+  } catch (err) {
+    console.error("Error in professionalSchedule Controller:", err);
+    return res.status(500).json({ message: "Internal server error", error: err.message });
+  }
+};
