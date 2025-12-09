@@ -48,7 +48,7 @@ app.use('/api/admin',adminRoute);
 
 //Routes for messages
 app.use("/api/messages", messageRoutes);
-app.use('/api/online-users',matchRoute);
+app.use('/api/match-online-users',matchRoute);
 app.use('/api/chat-requests',checkRegisteredUser,chatRequestRoute);
 
 app.use('/api/ai-chat',aiRoute);
