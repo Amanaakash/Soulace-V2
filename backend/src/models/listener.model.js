@@ -9,6 +9,7 @@ const listenerSchema = new mongoose.Schema(
     password: { type: String, required: true },
     isOnline: { type: Boolean, default: false },
     role: { type: String, default: "Listener" },
+    busyStatus: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

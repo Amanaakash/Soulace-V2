@@ -18,6 +18,7 @@ import { sendVerificationEmail, verifyEmail } from '../controllers/emailVerifica
 import { sendOTP, verifyOTP } from '../controllers/phoneVerification.controller.js';
 import { connectWithListener } from '../controllers/professional_support.controller.js';
 import { getAllProfessionalsWithAvailability, getPublicAvailableSlots } from '../controllers/calendar.controller.js';
+import { findAvailableListener, releaseListener } from '../controllers/ListenerForUser.controller.js';
 
 const router = express.Router();
 
@@ -68,6 +69,13 @@ router.get('/get-booking/:bookingId', checkRegisteredUser, getBookingById);
 // PATCH /api/user/bookings/:bookingId/cancel
 // Body: { cancellationReason }
 router.patch('/cancel-booking/:bookingId/cancel', checkRegisteredUser, cancelBooking);
+
+
+// USers will find listeners
+router.get('/find-available-listener', checkRegisteredUser, findAvailableListener);
+
+//Release listener when done - handled in listener controller after session ends
+router.post('/release-listener', checkRegisteredUser, releaseListener);
 
 
 //curently not using these
