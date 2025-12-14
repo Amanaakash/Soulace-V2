@@ -413,3 +413,209 @@
   }
 }
 
+/* Crisis Modal */
+.crisis-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.crisis-modal {
+  background: white;
+  border-radius: 20px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.crisis-modal-header {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 32px;
+  text-align: center;
+  border-radius: 20px 20px 0 0;
+}
+
+.crisis-modal-header svg {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 16px;
+}
+
+.crisis-modal-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.crisis-modal-content {
+  padding: 32px;
+}
+
+.crisis-message {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #1e293b;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.crisis-contacts {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.crisis-contacts h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.crisis-contact-item {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.crisis-contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.crisis-contact-item:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.crisis-contact-item strong {
+  display: block;
+  color: #1e293b;
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.crisis-contact-item a {
+  display: inline-block;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  margin-right: 12px;
+  transition: color 0.2s ease;
+}
+
+.crisis-contact-item a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.crisis-contact-item span {
+  display: block;
+  color: #64748b;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.crisis-note {
+  background: #fef3c7;
+  border: 2px solid #fbbf24;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #78350f;
+  text-align: center;
+  font-weight: 500;
+}
+
+.crisis-input-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 2px solid #fecaca;
+}
+
+.crisis-input-message svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Responsive Crisis Modal */
+@media (max-width: 768px) {
+  .crisis-modal {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 16px;
+  }
+
+  .crisis-modal-header {
+    padding: 24px 20px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .crisis-modal-header svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .crisis-modal-header h2 {
+    font-size: 24px;
+  }
+
+  .crisis-modal-content {
+    padding: 24px 20px;
+  }
+
+  .crisis-contact-item a {
+    font-size: 16px;
+  }
+}
+

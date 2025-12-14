@@ -19,6 +19,7 @@ const AIChat: React.FC = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCrisisMode, setIsCrisisMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -37,7 +38,7 @@ const AIChat: React.FC = () => {
   }, []);
 
   const sendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+    if (!inputMessage.trim() || isLoading || isCrisisMode) return;
 
     const userMessage: Message = {
       role: 'user',
@@ -85,9 +86,28 @@ const AIChat: React.FC = () => {
 
       const data = await response.json();
 
+      // Check for crisis state
+      if (data.crisisState === true) {
+        setIsCrisisMode(true);
+      }
+
+      // Handle response format - it could be a string or an object
+      let messageText = '';
+      if (typeof data.reply === 'string') {
+        messageText = data.reply;
+      } else if (typeof data.reply === 'object' && data.reply !== null) {
+        // If it's an object with greeting and invitation fields
+        if (data.reply.greeting && data.reply.invitation) {
+          messageText = `${data.reply.greeting}\n\n${data.reply.invitation}`;
+        } else {
+          // Fallback: stringify the object
+          messageText = JSON.stringify(data.reply);
+        }
+      }
+
       const assistantMessage: Message = {
         role: 'assistant',
-        message: data.reply,
+        message: messageText,
         timestamp: new Date(),
       };
 
@@ -124,10 +144,61 @@ const AIChat: React.FC = () => {
       },
     ]);
     setError(null);
+    setIsCrisisMode(false);
   };
 
   return (
     <div className="ai-chat-container">
+      {/* Crisis Modal */}
+      {isCrisisMode && (
+        <div className="crisis-modal-overlay">
+          <div className="crisis-modal">
+            <div className="crisis-modal-header">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#ef4444"/>
+              </svg>
+              <h2>Immediate Support Needed</h2>
+            </div>
+            <div className="crisis-modal-content">
+              <p className="crisis-message">
+                We've detected that you may be experiencing a crisis situation. Your safety and well-being are our top priority. 
+                Please reach out to professional crisis support immediately.
+              </p>
+              
+              <div className="crisis-contacts">
+                <h3>Crisis Support Resources:</h3>
+                <div className="crisis-contact-item">
+                  <strong>National Suicide Prevention Lifeline (US)</strong>
+                  <a href="tel:988">988</a>
+                  <span>Available 24/7</span>
+                </div>
+                <div className="crisis-contact-item">
+                  <strong>Crisis Text Line</strong>
+                  <span>Text HOME to <a href="sms:741741">741741</a></span>
+                  <span>Available 24/7</span>
+                </div>
+                <div className="crisis-contact-item">
+                  <strong>International Association for Suicide Prevention</strong>
+                  <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener noreferrer">
+                    Find help in your country
+                  </a>
+                </div>
+                <div className="crisis-contact-item">
+                  <strong>Emergency Services</strong>
+                  <a href="tel:911">Call 911</a>
+                  <span>For immediate emergency</span>
+                </div>
+              </div>
+
+              <p className="crisis-note">
+                If you're in immediate danger, please call emergency services right away. 
+                You deserve support, and there are people who want to help you through this.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="ai-chat-header">
         <div className="ai-chat-header-content">
           <div className="ai-avatar">
@@ -185,34 +256,45 @@ const AIChat: React.FC = () => {
       </div>
 
       <div className="ai-chat-input-container">
-        <div className="ai-chat-disclaimer">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
-          </svg>
-          <span>I'm an AI assistant, not a replacement for professional therapy</span>
-        </div>
-        <div className="ai-chat-input-wrapper">
-          <textarea
-            ref={inputRef}
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Share what's on your mind..."
-            disabled={isLoading}
-            rows={1}
-            className="ai-chat-input"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!inputMessage.trim() || isLoading}
-            className="send-button"
-            title="Send message"
-          >
+        {isCrisisMode ? (
+          <div className="crisis-input-message">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
             </svg>
-          </button>
-        </div>
+            <span>Chat is disabled. Please contact crisis support for immediate help.</span>
+          </div>
+        ) : (
+          <>
+            <div className="ai-chat-disclaimer">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+              </svg>
+              <span>I'm an AI assistant, not a replacement for professional therapy</span>
+            </div>
+            <div className="ai-chat-input-wrapper">
+              <textarea
+                ref={inputRef}
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Share what's on your mind..."
+                disabled={isLoading}
+                rows={1}
+                className="ai-chat-input"
+              />
+              <button
+                onClick={sendMessage}
+                disabled={!inputMessage.trim() || isLoading}
+                className="send-button"
+                title="Send message"
+              >
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
