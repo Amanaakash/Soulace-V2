@@ -35,7 +35,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/user/dashboard', icon: Grid3X3 },
-    { name: 'Mood Assessment', href: '/mood-assessment', icon: TrendingUp },
     { name: 'AI Chat', href: '/ai-chat', icon: Bot },
     { name: 'Peer Support', href: '/peer-support', icon: MessageCircle },
     { name: 'Connect with Listener', href: '/listener-connect', icon: Headphones },

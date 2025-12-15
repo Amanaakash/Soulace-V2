@@ -93,6 +93,14 @@ function App() {
             path="/peer-support" 
             element={
               <UserProtectedRoute>
+                <UserLayout><MoodAssessment /></UserLayout>
+              </UserProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/peer-chat" 
+            element={
+              <UserProtectedRoute>
                 <UserLayout><PeerSupport /></UserLayout>
               </UserProtectedRoute>
             } 
@@ -110,14 +118,6 @@ function App() {
             element={
               <UserProtectedRoute>
                 <UserLayout><MoodTracker /></UserLayout>
-              </UserProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/mood-assessment" 
-            element={
-              <UserProtectedRoute>
-                <UserLayout><MoodAssessment /></UserLayout>
               </UserProtectedRoute>
             } 
           />

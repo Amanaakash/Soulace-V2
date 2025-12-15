@@ -168,8 +168,8 @@ const UserDashboard: React.FC = () => {
 
           {/* Bottom Action Buttons */}
           <div className="absolute bottom-6 left-6 right-6 flex gap-4">
-            <Link to="/mood-assessment" className="flex-1 bg-blue-500/80 backdrop-blur-sm text-white py-3 px-6 rounded-full font-medium hover:bg-blue-600/80 transition-all duration-200 border border-white/30 text-center">
-              Know your mood 😊
+            <Link to="/peer-support" className="flex-1 bg-blue-500/80 backdrop-blur-sm text-white py-3 px-6 rounded-full font-medium hover:bg-blue-600/80 transition-all duration-200 border border-white/30 text-center">
+              Peer Support 😊
             </Link>
             <button className="flex-1 bg-purple-500/80 backdrop-blur-sm text-white py-3 px-6 rounded-full font-medium hover:bg-purple-600/80 transition-all duration-200 border border-white/30">
               Read Jokes 😂
