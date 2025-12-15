@@ -13,7 +13,8 @@ import {
   Settings,
   LogOut,
   X,
-  Bot
+  Bot,
+  Headphones
 } from 'lucide-react';
 import { useUserAuthStore } from '../store/userAuthStore';
 
@@ -37,6 +38,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Mood Assessment', href: '/mood-assessment', icon: TrendingUp },
     { name: 'AI Chat', href: '/ai-chat', icon: Bot },
     { name: 'Peer Support', href: '/peer-support', icon: MessageCircle },
+    { name: 'Connect with Listener', href: '/listener-connect', icon: Headphones },
     { name: 'Professional Help', href: '/professional-help', icon: Stethoscope },
     { name: 'Mood Tracker', href: '/mood-tracker', icon: Heart },
     { name: 'Mindfulness', href: '/mindfulness', icon: Heart },

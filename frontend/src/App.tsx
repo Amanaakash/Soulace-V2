@@ -18,6 +18,7 @@ import Community from './modules/user/pages/Community';
 import Emergency from './modules/user/pages/Emergency';
 import Profile from './modules/user/pages/Profile';
 import AIChat from './modules/user/pages/AIChat';
+import ListenerConnect from './modules/user/pages/ListenerConnect';
 
 // Professional Module
 import ProfessionalLogin from './modules/professional/pages/ProfessionalLogin';
@@ -157,6 +158,14 @@ function App() {
             element={
               <UserProtectedRoute>
                 <UserLayout><AIChat /></UserLayout>
+              </UserProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/listener-connect" 
+            element={
+              <UserProtectedRoute>
+                <UserLayout><ListenerConnect /></UserLayout>
               </UserProtectedRoute>
             } 
           />
