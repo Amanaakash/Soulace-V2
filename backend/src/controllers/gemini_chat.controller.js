@@ -67,10 +67,19 @@ export const chatWithGemini = async (req, res) => {
 
     const result = await chat.sendMessage(message);
     const responseText = result.response.text();
+    
+    // Strip markdown code fences if present
+    let cleanedText = responseText.trim();
+    if (cleanedText.startsWith('```')) {
+      cleanedText = cleanedText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    }
+    
+    const responseJson = JSON.parse(cleanedText);
 
     return res.status(200).json({
       success: true,
-      reply: responseText,
+      reply: responseJson.response,
+      crisisState: responseJson.crisisState,
     });
 
   } catch (error) {
