@@ -20,8 +20,29 @@ import calendarRoutes from "./src/routes/calendar.routes.js";
 dotenv.config();
 
 // CORS configuration to allow credentials
+const allowedOrigins = [
+  'https://soulace-v2.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:5000'
+];
+
+// If FRONTEND_URL is set in env, add it to allowed origins
+if (process.env.FRONTEND_URL) {
+  const envOrigins = process.env.FRONTEND_URL.split(',').map(origin => origin.trim());
+  allowedOrigins.push(...envOrigins);
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
