@@ -20,14 +20,14 @@ const Emergency: React.FC = () => {
       type: "text"
     },
     {
-      name: "SAMHSA National Helpline",
-      number: "1-800-662-4357",
-      description: "Mental health and substance abuse support",
+      name: "HEAL helpline for Students",
+      number: "+91 8108172432",
+      description: "Mental health and substance abuse support for students",
       type: "support"
     },
     {
-      name: "Emergency Services",
-      number: "911",
+      name: "Tele MANAS helpline",
+      number: "14416",
       description: "Immediate emergency response",
       type: "emergency"
     }
