@@ -2,19 +2,17 @@
 import dns from "node:dns";
 dns.setDefaultResultOrder("ipv4first");
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
 import dotenv from "dotenv";
 dotenv.config();
 
-import fetch from "node-fetch";
-if (!global.fetch) {
-  global.fetch = fetch;
-}
-// Debug check
-console.log("Debug API Key:", process.env.GEMINI_API_KEY ? "Exists" : "MISSING");
+import { OpenRouter } from "@openrouter/sdk";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Debug check
+console.log("Debug API Key:", process.env.OPEN_ROUTER_KEY ? "Exists" : "MISSING");
+
+const openrouter = new OpenRouter({
+  apiKey: process.env.OPEN_ROUTER_KEY,
+});
 
 const SOULACE_SYSTEM_PROMPT = `
 You are Soulace AI, a compassionate and empathetic mental health support assistant. Your role is to provide a safe space for users to express their feelings, listen actively with empathy, and offer gentle coping strategies or mindfulness techniques when appropriate. Use a warm, caring, non-judgmental, and respectful tone at all times.
@@ -48,39 +46,82 @@ export const chatWithGemini = async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // 2. MODEL FIX: Using the correct 1.5-flash model
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: SOULACE_SYSTEM_PROMPT,
-    });
+    if (!process.env.OPEN_ROUTER_KEY) {
+      console.error("❌ OPEN_ROUTER_KEY is missing from .env file");
+      return res.status(500).json({ 
+        error: "OpenRouter API key not configured",
+        details: "Please add OPEN_ROUTER_KEY to your .env file and restart the server"
+      });
+    }
 
-    // 3. Format History
-    const chatHistory = Array.isArray(history)
-      ? history.map((msg) => ({
-          role: msg.role === "assistant" ? "model" : "user",
-          parts: [{ text: msg.message || msg.parts?.[0]?.text || "" }],
-        }))
-      : [];
+    console.log("✅ OpenRouter API Key found, making request...");
 
-    // 4. Start Chat
-    const chat = model.startChat({
-      history: chatHistory,
-      generationConfig: {
-        maxOutputTokens: 1000,
-        temperature: 0.7,
-        responseMimeType: "application/json", // Request JSON format from model
+    // Format chat history for OpenRouter
+    const messages = [
+      {
+        role: "system",
+        content: SOULACE_SYSTEM_PROMPT,
       },
+    ];
+
+    // Add conversation history
+    if (Array.isArray(history) && history.length > 0) {
+      history.forEach((msg) => {
+        messages.push({
+          role: msg.role === "model" || msg.role === "assistant" ? "assistant" : "user",
+          content: msg.message || msg.content || msg.parts?.[0]?.text || "",
+        });
+      });
+    }
+
+    // Add current user message
+    messages.push({
+      role: "user",
+      content: message,
     });
 
-    const result = await chat.sendMessage(message);
-    const responseText = result.response.text();
-    
+    console.log("🔄 Sending request to OpenRouter API...");
+    console.log("📝 Message count:", messages.length);
+
+    // Use OpenRouter SDK to send chat request (non-streaming)
+    let completion;
+    try {
+      completion = await openrouter.chat.send({
+        model: "deepseek/deepseek-r1-0528:free", // Free DeepSeek model
+        messages: messages,
+        max_tokens: 1000,
+        temperature: 0.7,
+        response_format: { type: "json_object" }, // Request JSON format
+        stream: false, // Non-streaming response
+      });
+    } catch (apiError) {
+      console.error("❌ OpenRouter API Request Failed:", apiError.message);
+      
+      // Check if it's a network error
+      if (apiError.code === 'ECONNRESET' || apiError.code === 'ETIMEDOUT' || apiError.message.includes('terminated')) {
+        throw new Error("Network connection error. Please try again.");
+      }
+      
+      // Re-throw other errors
+      throw apiError;
+    }
+
+    console.log("✅ Received response from OpenRouter");
+
+    if (!completion.choices || !completion.choices[0] || !completion.choices[0].message) {
+      console.error("❌ Unexpected API response structure:", JSON.stringify(completion, null, 2));
+      throw new Error("Invalid response structure from OpenRouter");
+    }
+
+    const responseText = completion.choices[0].message.content;
+    console.log("📄 Response text length:", responseText.length);
+
     // Strip markdown code fences if present
     let cleanedText = responseText.trim();
     if (cleanedText.startsWith('```')) {
       cleanedText = cleanedText.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
     }
-    
+
     // Try to parse JSON with better error handling
     let responseJson;
     try {
@@ -88,22 +129,21 @@ export const chatWithGemini = async (req, res) => {
       responseJson = JSON.parse(cleanedText);
     } catch (parseError) {
       console.warn("Initial JSON parse failed, attempting to fix common issues...");
-      
+
       try {
         // Attempt to fix common JSON issues
         // 1. Remove potential trailing commas
         let fixedText = cleanedText.replace(/,(\s*[}\]])/g, '$1');
-        
+
         // 2. Fix unescaped newlines in strings
         fixedText = fixedText.replace(/\n/g, '\\n');
-        
-        // 3. Fix unescaped quotes (this is tricky, so we'll be conservative)
-        // 4. Try to extract JSON if it's embedded in text
+
+        // 3. Try to extract JSON if it's embedded in text
         const jsonMatch = fixedText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           fixedText = jsonMatch[0];
         }
-        
+
         responseJson = JSON.parse(fixedText);
         console.log("Successfully parsed JSON after fixes");
       } catch (secondError) {
@@ -112,13 +152,13 @@ export const chatWithGemini = async (req, res) => {
           cleaned: cleanedText.substring(0, 500),
           error: secondError.message
         });
-        
+
         // Fallback: Create a response object from the text
         responseJson = {
           response: cleanedText || "I'm here to listen. Could you tell me more about what's on your mind?",
           crisisState: false
         };
-        
+
         console.log("Using fallback response due to JSON parse failure");
       }
     }
@@ -130,7 +170,8 @@ export const chatWithGemini = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Soulace AI Error:", error);
+    console.error("❌ Soulace AI Error:", error.message);
+    console.error("Stack trace:", error.stack);
     res.status(500).json({
       error: "Failed to process request",
       details: error.message,
